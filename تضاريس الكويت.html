@@ -1,0 +1,461 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>تضاريس الكويت</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Reem+Kufi:wght@500;700&display=swap">
+<style>
+/* Layout: category list on the inline-start side, a pannable sea-and-sand map beside it; markers pop in when a category is switched on. */
+:root{
+  --font-display:'Reem Kufi','IBM Plex Sans Arabic',system-ui,'Segoe UI',Tahoma,sans-serif;
+  --font-ui:'IBM Plex Sans Arabic',system-ui,'Segoe UI',Tahoma,sans-serif;
+
+  --bg:#eceff0; --panel:#f8f9fa; --fg:#17252d; --muted:#586a74; --line:#cfd8dc;
+  --accent:#1c5b77; --accent-ink:#ffffff;
+
+  --sea:#b5cfdb; --shelf:#cfe3ec; --land-out:#ddd7c7; --land-in:#f1ecdc; --coast:#7f98a2;
+  --border:#b02f29; --geo:#6b6b5b; --halo:#f6f2e6; --label:#1a2a31; --grid:#6b7b82; --frame:#34454d;
+
+  --c-plateau:#1b1b1b; --c-hills:#2d4aa8; --c-plains:#25995a; --c-valleys:#d3208a;
+  --c-dunes:#8a3fb5; --c-khabra:#c4702a; --c-islands:#8a3fb5; --c-capes:#c8312e;
+  --c-khors:#4a5a64; --khor-stroke:#2b3a43; --c-bays:#c8312e;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0e181d; --panel:#15242b; --fg:#e7eff2; --muted:#9bb0ba; --line:#28404b;
+    --accent:#74c3e0; --accent-ink:#082029;
+    --sea:#1a3340; --shelf:#244352; --land-out:#262a27; --land-in:#383b32; --coast:#5f8291;
+    --border:#f0776f; --geo:#b0b29d; --halo:#20231e; --label:#eef3f1; --grid:#8aa0a9; --frame:#9db3bc;
+    --c-plateau:#f1efe9; --c-hills:#8aa4f5; --c-plains:#4fcf8a; --c-valleys:#ff6bbd;
+    --c-dunes:#c78af0; --c-khabra:#f0a35e; --c-islands:#c78af0; --c-capes:#ff7a74;
+    --c-khors:#b7c6ce; --khor-stroke:#0f1a20; --c-bays:#ff7a74;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0e181d; --panel:#15242b; --fg:#e7eff2; --muted:#9bb0ba; --line:#28404b;
+  --accent:#74c3e0; --accent-ink:#082029;
+  --sea:#1a3340; --shelf:#244352; --land-out:#262a27; --land-in:#383b32; --coast:#5f8291;
+  --border:#f0776f; --geo:#b0b29d; --halo:#20231e; --label:#eef3f1; --grid:#8aa0a9; --frame:#9db3bc;
+  --c-plateau:#f1efe9; --c-hills:#8aa4f5; --c-plains:#4fcf8a; --c-valleys:#ff6bbd;
+  --c-dunes:#c78af0; --c-khabra:#f0a35e; --c-islands:#c78af0; --c-capes:#ff7a74;
+  --c-khors:#b7c6ce; --khor-stroke:#0f1a20; --c-bays:#ff7a74;
+  color-scheme:dark;
+}
+
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font-ui);font-size:15px;line-height:1.5}
+button{font-family:inherit}
+:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+.app{
+  max-width:1260px;margin:0 auto;
+  padding-block:20px 28px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:grid;grid-template-columns:340px minmax(0,1fr);gap:22px;align-items:start;
+}
+@media (max-width:860px){.app{grid-template-columns:minmax(0,1fr)}}
+
+/* panel */
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:16px;min-width:0}
+h1{margin:0;font:700 27px/1.2 var(--font-display);text-wrap:balance}
+.lead{margin:6px 0 0;color:var(--muted);font-size:14px}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.btn{font:600 13.5px var(--font-ui);padding:7px 13px;border-radius:8px;border:1px solid var(--line);background:transparent;color:var(--fg);cursor:pointer}
+.btn:hover{border-color:var(--accent)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+.switch{display:flex;align-items:center;gap:9px;font-size:14px;cursor:pointer;width:fit-content}
+.switch input{width:17px;height:17px;accent-color:var(--accent);margin:0}
+
+.group{display:flex;flex-direction:column;gap:8px}
+.group h2{margin:0 0 2px;font:600 13px var(--font-ui);color:var(--muted)}
+.cat-btn{display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:1px solid var(--line);border-radius:10px;background:var(--panel);color:var(--fg);font:600 15px var(--font-ui);cursor:pointer;text-align:start}
+.cat-btn:hover{border-color:var(--cc)}
+.cat-btn[aria-pressed="true"]{border-color:var(--cc);background:color-mix(in srgb,var(--cc) 13%,var(--panel))}
+.cat-btn .sym{display:grid;place-items:center;width:30px;height:26px;flex:none;--halo:var(--panel)}
+.cat-btn .sym svg{width:26px;height:24px;display:block}
+.cat-btn .nm{flex:1;min-width:0}
+.cat-btn .cnt{font-size:12.5px;font-variant-numeric:tabular-nums;color:var(--muted);background:var(--bg);border-radius:999px;padding:1px 9px}
+.names{list-style:none;margin:6px 16px 4px;padding:0 10px 0 0;padding-inline:10px 0;border-inline-start:2px solid var(--cc);display:flex;flex-direction:column;gap:1px}
+.item{width:100%;text-align:start;border:0;background:transparent;color:var(--muted);font:500 14px var(--font-ui);padding:5px 8px;border-radius:6px;cursor:pointer}
+.item:hover,.item:focus-visible{color:var(--fg);background:var(--bg)}
+.status{margin:0;font-size:13.5px;color:var(--muted);border-top:1px solid var(--line);padding-top:12px}
+
+/* map */
+.mapwrap{position:relative;border:1px solid var(--line);border-radius:14px;background:var(--sea);overflow:hidden;min-width:0}
+.scroller{overflow:auto;direction:ltr;max-height:min(82vh,820px)}
+.scroller.pannable{cursor:grab}
+.scroller.dragging{cursor:grabbing;user-select:none}
+#map{display:block;width:100%;height:auto;max-width:none;user-select:none;-webkit-user-select:none}
+.zoom{position:absolute;top:10px;inset-inline-end:14px;display:flex;flex-direction:column;gap:6px;z-index:2}
+.zbtn{width:36px;height:36px;border-radius:9px;border:1px solid var(--line);background:var(--panel);color:var(--fg);font:600 19px/1 var(--font-ui);cursor:pointer;display:grid;place-items:center;padding:0}
+.zbtn:hover:not(:disabled){border-color:var(--accent)}
+.zbtn:disabled{opacity:.4;cursor:default}
+.hint{position:absolute;inset-inline:0;bottom:16px;margin:0;display:flex;justify-content:center;pointer-events:none;z-index:2}
+.hint span{background:color-mix(in srgb,var(--panel) 94%,transparent);border:1px solid var(--line);border-radius:999px;padding:7px 16px;font-size:13.5px;color:var(--fg);max-width:calc(100% - 32px);text-align:center}
+
+/* svg text */
+.geo{font:500 16px var(--font-ui);fill:var(--geo)}
+.geo.sm{font-size:13.5px}
+.tick{font:600 9.5px var(--font-ui);fill:var(--muted)}
+.lbl{font:600 11.5px var(--font-ui);fill:var(--label);paint-order:stroke;stroke:var(--halo);stroke-width:3.2px;stroke-linejoin:round;transition:opacity .25s}
+
+/* features */
+.feat{opacity:0;pointer-events:none;transition:opacity .25s ease}
+.feat.on{opacity:1;pointer-events:auto;cursor:pointer;transition-delay:var(--d,0s)}
+.feat .pop{transform-box:fill-box;transform-origin:center;transform:scale(.2);transition:transform .45s cubic-bezier(.2,1.4,.4,1)}
+.feat.on .pop{transform:scale(1);transition-delay:var(--d,0s)}
+.feat .ring{fill:none;stroke:var(--accent);stroke-width:2.2;opacity:0;transition:opacity .15s}
+.feat.hl .ring{opacity:1}
+.nolabels .feat:not(.peek) .lbl{opacity:0}
+@media (prefers-reduced-motion:reduce){
+  .feat,.feat .pop,.lbl,.feat .ring{transition:none!important}
+}
+</style>
+
+<div class="app" lang="ar" dir="rtl">
+  <aside class="panel">
+    <div>
+      <h1>تضاريس دولة الكويت</h1>
+      <p class="lead">الخريطة فارغة في البداية. اضغط على اسم المظهر ليظهر كل ما يخصه على الخريطة.</p>
+    </div>
+    <div class="actions">
+      <button type="button" class="btn primary" id="btnAll">إظهار الكل</button>
+      <button type="button" class="btn" id="btnClear">مسح الخريطة</button>
+    </div>
+    <label class="switch"><input type="checkbox" id="chkLabels" checked><span>إظهار الأسماء على الخريطة</span></label>
+    <div id="groups" style="display:flex;flex-direction:column;gap:16px"></div>
+    <p class="status" id="status" aria-live="polite"></p>
+  </aside>
+
+  <main class="mapwrap" id="mapwrap">
+    <div class="zoom" role="group" aria-label="التحكم بحجم الخريطة">
+      <button type="button" class="zbtn" id="zIn" aria-label="تكبير">+</button>
+      <button type="button" class="zbtn" id="zOut" aria-label="تصغير">−</button>
+      <button type="button" class="zbtn" id="zFit" aria-label="ملاءمة الخريطة" style="font-size:16px">⤢</button>
+    </div>
+    <div class="scroller" id="scroller" role="region" aria-label="خريطة دولة الكويت" tabindex="0">
+      <svg id="map" viewBox="-24 0 724 522" role="img" aria-label="خريطة دولة الكويت">
+        <defs><clipPath id="frameClip"><rect x="25" y="24" width="643" height="471"/></clipPath></defs>
+        <g id="base" clip-path="url(#frameClip)"></g>
+        <g id="frame"></g>
+        <g id="feats"></g>
+      </svg>
+    </div>
+    <p class="hint" id="hint"><span>الخريطة فارغة. اختر مظهراً من القائمة لإظهار مواقعه.</span></p>
+  </main>
+</div>
+
+<script>
+(function(){
+'use strict';
+var NS='http://www.w3.org/2000/svg';
+function $(s){return document.querySelector(s);}
+function toAr(n){return String(n).replace(/\d/g,function(d){return '٠١٢٣٤٥٦٧٨٩'.charAt(d);});}
+function mk(tag,attrs,parent){
+  var e=document.createElementNS(NS,tag);
+  for(var k in attrs){e.setAttribute(k,attrs[k]);}
+  if(parent){parent.appendChild(e);}
+  return e;
+}
+function P(p){return p[0]+','+p[1];}
+function txt(parent,s,x,y,cls,extra){
+  var a={x:x,y:y,'class':cls};
+  if(extra){for(var k in extra){a[k]=extra[k];}}
+  var t=mk('text',a,parent); t.textContent=s; return t;
+}
+/* Catmull-Rom spline through points, as cubic Bezier segments (path must already be at pts[0]) */
+function cr(pts,closed){
+  var n=pts.length,d='',segs=closed?n:n-1,t=1/6;
+  function at(i){return pts[((i%n)+n)%n];}
+  for(var i=0;i<segs;i++){
+    var p0=closed?at(i-1):pts[Math.max(i-1,0)];
+    var p1=pts[i];
+    var p2=closed?at(i+1):pts[i+1];
+    var p3=closed?at(i+2):pts[Math.min(i+2,n-1)];
+    var c1=[p1[0]+(p2[0]-p0[0])*t,p1[1]+(p2[1]-p0[1])*t];
+    var c2=[p2[0]-(p3[0]-p1[0])*t,p2[1]-(p3[1]-p1[1])*t];
+    d+=' C'+c1[0].toFixed(1)+','+c1[1].toFixed(1)+' '+c2[0].toFixed(1)+','+c2[1].toFixed(1)+' '+p2[0]+','+p2[1];
+  }
+  return d;
+}
+
+/* ---------- data (positions are in the source map's pixel space) ---------- */
+var CATS=[
+ {id:'plateau',name:'الهضاب',shape:'circle',color:'--c-plateau',items:[
+   {n:'هضبة الأحمدي',x:434.5,y:312.7,lx:430,ly:331,a:'end'}]},
+ {id:'hills',name:'التلال',shape:'circle',color:'--c-hills',items:[
+   {n:'تلال اللياح',x:255.1,y:184.5,lx:246,ly:189,a:'end'},
+   {n:'تلال جال الزور',x:403.8,y:190.4,lx:395,ly:194,a:'end'},
+   {n:'تلال كراع المرو',x:316.3,y:214.6,lx:308,ly:218,a:'end'},
+   {n:'تل برقان',x:385.6,y:328.0,lx:384,ly:346,a:'end'}]},
+ {id:'plains',name:'السهول',shape:'circle',color:'--c-plains',items:[
+   {n:'سهل الدبدبة',x:256,y:282,lx:247,ly:286,a:'end'},
+   {n:'سهل العدان',x:447.3,y:284.2,lx:439,ly:288,a:'end'}]},
+ {id:'valleys',name:'الوديان',shape:'circle',color:'--c-valleys',items:[
+   {n:'وادي الباطن',x:165,y:180,lx:134,ly:226,a:'middle',rot:-52},
+   {n:'منخفض أم الرمم',x:418,y:155.2,lx:410,ly:172,a:'end'}]},
+ {id:'dunes',name:'الكثبان الرملية',shape:'circle',color:'--c-dunes',items:[
+   {n:'كثبان أم نقا',x:365.3,y:95.8,lx:357,ly:100,a:'end'}]},
+ {id:'khabra',name:'الخباري',shape:'circle',color:'--c-khabra',items:[
+   {n:'خبرة الروضتين',x:350,y:116.9,lx:342,ly:122,a:'end'},
+   {n:'خبرة أم العيش',x:403.8,y:132.5,lx:396,ly:135,a:'end'}]},
+ {id:'islands',name:'الجزر',shape:'triangle',color:'--c-islands',items:[
+   {n:'جزيرة وربة',x:456.7,y:63.1,lx:457,ly:51,a:'middle'},
+   {n:'جزيرة بوبيان',x:497.5,y:135.3,lx:494,ly:153,a:'middle'},
+   {n:'جزيرة مسكان',x:489.5,y:204.3,lx:497,ly:196,a:'start'},
+   {n:'جزيرة فيلكا',x:543.5,y:216.9,lx:551,ly:242,a:'middle'},
+   {n:'جزيرة عوهة',x:556.8,y:250.1,lx:559,ly:268,a:'middle'},
+   {n:'جزيرة كبر',x:551.6,y:319.3,lx:552,ly:337,a:'middle'},
+   {n:'جزيرة قاروه',x:633.2,y:391.1,lx:628,ly:408,a:'end'},
+   {n:'جزيرة أم المرادم',x:638.4,y:450.2,lx:631,ly:467,a:'end'},
+   {n:'جزيرة أم النمل',x:389.2,y:224.3,lx:389,ly:241,a:'middle'}]},
+ {id:'capes',name:'الرؤوس',shape:'square',color:'--c-capes',items:[
+   {n:'رأس الأرض',x:448.5,y:258,lx:458,ly:262,a:'start'},
+   {n:'رأس الجليعة',x:501,y:387.5,lx:510,ly:392,a:'start'},
+   {n:'رأس الزور',x:528.5,y:427,lx:537,ly:431,a:'start'}]},
+ {id:'khors',name:'الأخوار',shape:'khor',color:'--c-khors',items:[
+   {n:'خور عبدالله',x:526.1,y:108.4,lx:538,ly:129,a:'start'},
+   {n:'خور العمي',x:516.5,y:441,lx:525,ly:445,a:'start'}]},
+ {id:'bays',name:'الخلجان',shape:'hatch',color:'--c-bays',items:[
+   {n:'جون الكويت',x:424,y:217,lx:444,ly:242,a:'middle'}]}
+];
+var GROUPS=[
+ {title:'المظاهر الصحراوية',cats:['plateau','hills','plains','valleys']},
+ {title:'الأشكال التضاريسية',cats:['dunes','khabra','islands','capes','khors','bays']}
+];
+var CM={},ITEMS={},TOTAL=0;
+CATS.forEach(function(c){CM[c.id]=c;c.items.forEach(function(it,i){it.id=c.id+'-'+i;ITEMS[it.id]=it;TOTAL++;});});
+
+function marker(shape){
+  var base='fill="var(--cc)" stroke="var(--halo)" stroke-width="1.8"';
+  switch(shape){
+    case 'circle': return '<circle r="6.4" '+base+'/>';
+    case 'triangle': return '<path d="M0 -8.2L7.8 5.8H-7.8Z" stroke-linejoin="round" '+base+'/>';
+    case 'square': return '<rect x="-5.6" y="-5.6" width="11.2" height="11.2" rx="1.2" '+base+'/>';
+    case 'khor': return '<rect x="-5.6" y="-5.6" width="11.2" height="11.2" rx="1.2" fill="#ffffff" stroke="var(--khor-stroke)" stroke-width="1.8"/>';
+    case 'hatch':
+      var s='<path d="M-19 8L-11 -8H19L11 8Z" fill="var(--cc)" fill-opacity=".14" stroke="var(--cc)" stroke-width="1.1"/>';
+      [-14,-7,0,7].forEach(function(x){s+='<line x1="'+x+'" y1="8" x2="'+(x+8)+'" y2="-8" stroke="var(--cc)" stroke-width="1.8" stroke-linecap="round"/>';});
+      return s;
+  }
+  return '';
+}
+function iconMarker(shape){return shape==='hatch'?'<g transform="scale(.55)">'+marker(shape)+'</g>':marker(shape);}
+
+/* ---------- base map ---------- */
+var svg=$('#map'),gBase=$('#base'),gFrame=$('#frame'),gFeats=$('#feats'),defs=svg.querySelector('defs');
+
+var SEA=[[459,43],[456,48],[452,51],[451,53],[452,56],[459,60],[465,61],[468,64],[465,67],[459,67],[443,77],[434,78],[432,76],[433,73],[437,68],[440,67],[440,64],[437,61],[435,62],[434,66],[428,75],[429,79],[432,82],[431,85],[432,95],[430,103],[442,134],[445,137],[456,143],[457,154],[460,160],[466,166],[469,175],[474,183],[476,191],[479,196],[479,202],[474,205],[463,197],[441,190],[421,191],[391,209],[367,237],[360,238],[355,244],[351,245],[350,251],[353,252],[358,248],[369,249],[372,246],[377,245],[381,248],[382,251],[381,259],[386,261],[392,261],[400,258],[406,251],[413,250],[420,241],[424,240],[427,243],[426,245],[427,247],[439,257],[445,255],[450,251],[453,251],[455,253],[452,263],[452,271],[454,279],[452,281],[446,280],[443,285],[445,288],[449,288],[454,285],[458,289],[464,302],[466,319],[469,330],[471,332],[470,339],[475,355],[480,361],[480,365],[487,369],[488,374],[492,378],[497,381],[506,382],[509,385],[507,390],[507,402],[509,409],[512,413],[519,419],[526,422],[532,422],[535,425],[531,436],[532,443],[535,446],[536,454],[533,457],[535,468],[542,478],[554,491],[557,540],[563,540],[567,540],[604,540],[605,540],[608,540],[654,540],[655,540],[720,540],[720,486],[720,484],[720,439],[720,438],[720,407],[662,398],[662,394],[720,390],[720,383],[659,376],[720,371],[720,364],[660,359],[720,353],[663,346],[661,344],[661,337],[663,335],[720,328],[660,324],[659,321],[660,316],[659,270],[661,266],[660,260],[720,257],[720,245],[661,242],[663,233],[659,227],[660,222],[659,211],[661,208],[656,203],[658,201],[658,198],[661,195],[660,190],[720,186],[720,183],[658,178],[660,172],[720,169],[720,141],[720,139],[720,132],[720,110],[660,104],[658,104],[655,108],[650,110],[643,108],[629,97],[620,93],[617,93],[614,107],[618,113],[619,118],[609,124],[605,124],[596,118],[592,107],[584,104],[582,105],[571,104],[564,99],[561,101],[551,100],[544,94],[520,81],[514,73],[513,69],[503,62],[489,59],[479,52],[470,52],[463,48]];
+var HOLES=[[[503,223],[507,219],[513,218],[526,224],[536,237],[532,240],[520,232],[504,231],[502,229]],[[465,68],[482,75],[497,88],[514,108],[520,118],[531,128],[534,139],[533,154],[523,172],[509,185],[497,191],[490,191],[487,189],[484,189],[478,184],[475,179],[470,160],[462,152],[462,149],[460,147],[460,141],[455,135],[447,133],[444,130],[444,127],[448,123],[443,124],[440,121],[440,114],[435,111],[434,104],[436,102],[440,103],[446,102],[451,104],[455,110],[462,111],[465,113],[472,112],[476,115],[473,108],[477,105],[477,103],[474,101],[474,99],[481,94],[483,89],[479,87],[477,88],[477,94],[473,97],[470,97],[467,93],[465,93],[461,97],[453,96],[450,93],[444,92],[440,89],[440,85],[448,78],[452,76],[454,77],[456,76],[459,72]]];
+var BORDER=[[550.0,119.0],[546.0,117.0],[516.0,89.0],[478.0,59.0],[445.0,59.0],[434.0,66.0],[427.0,67.0],[419.0,65.0],[351.0,35.0],[257.0,35.0],[233.0,49.0],[206.0,57.0],[192.0,70.0],[183.0,88.0],[176.0,109.0],[170.0,118.0],[167.0,128.0],[157.0,141.0],[154.0,159.0],[148.0,170.0],[141.0,178.0],[137.0,187.0],[129.0,197.0],[127.0,204.0],[117.0,223.0],[95.0,246.0],[87.0,261.0],[75.0,274.0],[65.0,290.0],[57.0,298.0],[43.0,308.0],[36.0,317.0],[37.0,319.0],[47.0,321.0],[58.0,321.0],[63.0,323.0],[123.0,329.0],[127.0,331.0],[135.0,331.0],[148.0,334.0],[281.0,351.0],[287.0,357.0],[299.0,379.0],[315.0,399.0],[317.0,404.0],[318.0,419.0],[315.0,431.0],[317.0,446.0],[327.0,454.0],[331.0,462.0],[346.0,477.0],[347.0,481.0],[350.0,484.0],[514.0,482.0],[547.0,483.0]];
+/* Kuwait land: the border line closed through the sea, which is painted over it */
+var KUW=BORDER.concat([[720,483],[720,170],[560,125]]);
+
+var seaD='M'+P(SEA[0])+cr(SEA,true)+' Z';
+HOLES.forEach(function(h){seaD+=' M'+P(h[0])+cr(h,true)+' Z';});
+var cp=mk('clipPath',{id:'seaClip'},defs); mk('path',{d:seaD,'clip-rule':'evenodd'},cp);
+
+mk('rect',{x:25,y:24,width:643,height:471,fill:'var(--land-out)'},gBase);
+mk('path',{d:'M'+KUW.map(P).join(' L')+' Z',fill:'var(--land-in)'},gBase);
+mk('path',{d:seaD,fill:'var(--sea)','fill-rule':'evenodd'},gBase);
+
+var shelf=mk('g',{'clip-path':'url(#seaClip)'},gBase);
+mk('path',{d:seaD,fill:'none',stroke:'var(--shelf)','stroke-width':18,'stroke-opacity':.45,'stroke-linejoin':'round'},shelf);
+mk('path',{d:seaD,fill:'none',stroke:'var(--shelf)','stroke-width':9,'stroke-opacity':.6,'stroke-linejoin':'round'},shelf);
+mk('path',{d:seaD,fill:'none',stroke:'var(--coast)','stroke-width':1.1,'stroke-linejoin':'round'},gBase);
+
+/* graticule */
+var LON=[[151,'47°E'],[291,'47°30′E'],[428,'48°E'],[565,'48°30′E']];
+var LAT=[[65,'30°N'],[208,'29°30′N'],[351,'29°N'],[489,'28°30′N']];
+var grid=mk('g',{stroke:'var(--grid)','stroke-opacity':.3,'stroke-width':.8,'stroke-dasharray':'2 4'},gBase);
+LON.forEach(function(l){mk('line',{x1:l[0],y1:24,x2:l[0],y2:495},grid);});
+LAT.forEach(function(l){mk('line',{x1:25,y1:l[0],x2:668,y2:l[0]},grid);});
+
+/* border of Kuwait, traced from the source map */
+mk('path',{d:'M'+BORDER.map(P).join(' L'),fill:'none',stroke:'var(--border)','stroke-width':1.7,'stroke-dasharray':'8 3 2 3','stroke-linejoin':'round'},gBase);
+
+/* names of neighbours and sea */
+txt(gBase,'العراق',95,118,'geo',{'text-anchor':'middle'});
+txt(gBase,'إيران',555,63,'geo',{'text-anchor':'middle'});
+txt(gBase,'المملكة العربية السعودية',150,382,'geo sm',{'text-anchor':'middle'});
+txt(gBase,'الخليج العربي',578,300,'geo',{'text-anchor':'middle'});
+
+/* scale bar: 10 km = 27.4 units at this latitude */
+var sb=mk('g',{transform:'translate(40 466)'},gBase);
+mk('rect',{x:0,y:0,width:27.4,height:5,fill:'var(--label)'},sb);
+mk('rect',{x:27.4,y:0,width:27.4,height:5,fill:'var(--halo)',stroke:'var(--label)','stroke-width':.8},sb);
+txt(sb,'٠',0,-4,'tick',{'text-anchor':'middle'});
+txt(sb,'١٠',27.4,-4,'tick',{'text-anchor':'middle'});
+txt(sb,'٢٠ كم',56,-4,'tick',{'text-anchor':'middle'});
+
+/* frame, ticks, coordinates */
+mk('rect',{x:25,y:24,width:643,height:471,fill:'none',stroke:'var(--frame)','stroke-width':1.6},gFrame);
+LON.forEach(function(l){
+  mk('line',{x1:l[0],y1:24,x2:l[0],y2:31,stroke:'var(--frame)','stroke-width':1},gFrame);
+  mk('line',{x1:l[0],y1:495,x2:l[0],y2:488,stroke:'var(--frame)','stroke-width':1},gFrame);
+  txt(gFrame,l[1],l[0],16,'tick',{'text-anchor':'middle'});
+  txt(gFrame,l[1],l[0],509,'tick',{'text-anchor':'middle'});
+});
+LAT.forEach(function(l){
+  mk('line',{x1:25,y1:l[0],x2:32,y2:l[0],stroke:'var(--frame)','stroke-width':1},gFrame);
+  mk('line',{x1:668,y1:l[0],x2:661,y2:l[0],stroke:'var(--frame)','stroke-width':1},gFrame);
+  txt(gFrame,l[1],21,l[0]+3,'tick',{'text-anchor':'end'});
+  txt(gFrame,l[1],672,l[0]+3,'tick',{'text-anchor':'start'});
+});
+
+/* ---------- features ---------- */
+var moved=false;
+CATS.forEach(function(c){
+  c.items.forEach(function(it){
+    var g=mk('g',{'class':'feat',id:'f-'+it.id,transform:'translate('+it.x+' '+it.y+')'},gFeats);
+    g.style.setProperty('--cc','var('+c.color+')');
+    var hit=c.shape==='hatch'
+      ?'<rect class="hit" x="-23" y="-12" width="46" height="24" fill="transparent"/><rect class="ring" x="-23" y="-12" width="46" height="24" rx="9"/>'
+      :'<circle class="hit" r="14" fill="transparent"/><circle class="ring" r="13.5"/>';
+    g.innerHTML='<title>'+it.n+'</title>'+hit+'<g class="pop">'+marker(c.shape)+'</g>';
+    var dx=it.lx-it.x,dy=it.ly-it.y;
+    var t=mk('text',{x:dx,y:dy,'text-anchor':it.a,'class':'lbl'},g);
+    if(it.rot){t.setAttribute('transform','rotate('+it.rot+' '+dx+' '+dy+')');}
+    t.textContent=it.n;
+    g.addEventListener('click',function(){
+      if(moved){return;}
+      g.classList.toggle('peek');
+    });
+  });
+});
+
+/* ---------- panel ---------- */
+var groupsEl=$('#groups'),statusEl=$('#status'),hint=$('#hint'),active={};
+GROUPS.forEach(function(gr){
+  var sec=document.createElement('section');
+  sec.className='group';
+  sec.innerHTML='<h2>'+gr.title+'</h2>';
+  gr.cats.forEach(function(id){
+    var c=CM[id];
+    var row=document.createElement('div');
+    row.className='cat';
+    row.setAttribute('data-cat',id);
+    row.style.setProperty('--cc','var('+c.color+')');
+    row.innerHTML=
+      '<button type="button" class="cat-btn" aria-pressed="false" aria-controls="list-'+id+'">'+
+        '<span class="sym"><svg viewBox="-12 -11 24 22" aria-hidden="true">'+iconMarker(c.shape)+'</svg></span>'+
+        '<span class="nm">'+c.name+'</span><span class="cnt">'+toAr(c.items.length)+'</span></button>'+
+      '<ul class="names" id="list-'+id+'" hidden>'+
+        c.items.map(function(it){return '<li><button type="button" class="item" data-f="'+it.id+'">'+it.n+'</button></li>';}).join('')+
+      '</ul>';
+    sec.appendChild(row);
+  });
+  groupsEl.appendChild(sec);
+});
+
+function update(){
+  var n=0;
+  Object.keys(active).forEach(function(id){if(active[id]){n+=CM[id].items.length;}});
+  statusEl.textContent=n
+    ?'يظهر '+toAr(n)+' من '+toAr(TOTAL)+' معلماً على الخريطة'
+    :'الخريطة فارغة · '+toAr(TOTAL)+' معلماً بانتظار الإظهار';
+  hint.hidden=n>0;
+}
+function setCat(id,on){
+  active[id]=on;
+  var row=document.querySelector('.cat[data-cat="'+id+'"]');
+  row.querySelector('.cat-btn').setAttribute('aria-pressed',on?'true':'false');
+  row.querySelector('.names').hidden=!on;
+  CM[id].items.forEach(function(it,i){
+    var f=document.getElementById('f-'+it.id);
+    f.style.setProperty('--d',(i*60)+'ms');
+    f.classList.toggle('on',on);
+    if(!on){f.classList.remove('peek','hl');}
+  });
+  update();
+}
+
+var scroller=$('#scroller'),mapwrap=$('#mapwrap');
+function pulse(fid){
+  var f=document.getElementById('f-'+fid),it=ITEMS[fid];
+  if(!f||!f.classList.contains('on')){return;}
+  f.classList.add('hl');
+  if(scroller.scrollWidth>scroller.clientWidth+2||scroller.scrollHeight>scroller.clientHeight+2){
+    var k=svg.clientWidth/724;
+    scroller.scrollTo({left:(it.x+24)*k-scroller.clientWidth/2,top:it.y*k-scroller.clientHeight/2,behavior:'smooth'});
+  }
+  if(window.matchMedia('(max-width:860px)').matches){mapwrap.scrollIntoView({behavior:'smooth',block:'nearest'});}
+  clearTimeout(f._t);
+  f._t=setTimeout(function(){f.classList.remove('hl');},1800);
+}
+function setHl(fid,on){
+  var f=document.getElementById('f-'+fid);
+  if(f&&f.classList.contains('on')){f.classList.toggle('hl',on);}
+}
+groupsEl.addEventListener('click',function(e){
+  var b=e.target.closest('.cat-btn');
+  if(b){var id=b.parentNode.getAttribute('data-cat');setCat(id,!active[id]);return;}
+  var it=e.target.closest('.item');
+  if(it){pulse(it.getAttribute('data-f'));}
+});
+['mouseover','focusin'].forEach(function(ev){
+  groupsEl.addEventListener(ev,function(e){var it=e.target.closest('.item');if(it){setHl(it.getAttribute('data-f'),true);}});
+});
+['mouseout','focusout'].forEach(function(ev){
+  groupsEl.addEventListener(ev,function(e){var it=e.target.closest('.item');if(it){setHl(it.getAttribute('data-f'),false);}});
+});
+$('#btnAll').addEventListener('click',function(){CATS.forEach(function(c){setCat(c.id,true);});});
+$('#btnClear').addEventListener('click',function(){CATS.forEach(function(c){setCat(c.id,false);});});
+$('#chkLabels').addEventListener('change',function(e){svg.classList.toggle('nolabels',!e.target.checked);});
+
+/* ---------- zoom and pan ---------- */
+var Z=[1,1.6,2.4,3.4],zi=0,zIn=$('#zIn'),zOut=$('#zOut');
+function applyZoom(){
+  var cw=scroller.clientWidth,ch=scroller.clientHeight;
+  var ow=svg.clientWidth||1,oh=svg.clientHeight||1;
+  var fx=(scroller.scrollLeft+cw/2)/ow,fy=(scroller.scrollTop+ch/2)/oh;
+  svg.style.width=Math.round(Math.max(cw,640)*Z[zi])+'px';
+  scroller.scrollLeft=fx*svg.clientWidth-cw/2;
+  scroller.scrollTop=fy*svg.clientHeight-scroller.clientHeight/2;
+  scroller.classList.toggle('pannable',scroller.scrollWidth>cw+2||scroller.scrollHeight>scroller.clientHeight+2);
+  zIn.disabled=zi===Z.length-1;
+  zOut.disabled=zi===0;
+}
+zIn.addEventListener('click',function(){if(zi<Z.length-1){zi++;applyZoom();}});
+zOut.addEventListener('click',function(){if(zi>0){zi--;applyZoom();}});
+$('#zFit').addEventListener('click',function(){
+  zi=0;applyZoom();
+  scroller.scrollLeft=(scroller.scrollWidth-scroller.clientWidth)*0.45;
+  scroller.scrollTop=0;
+});
+var rt;
+window.addEventListener('resize',function(){clearTimeout(rt);rt=setTimeout(applyZoom,120);});
+
+var drag=null;
+scroller.addEventListener('pointerdown',function(e){
+  if(e.pointerType!=='mouse'||e.button!==0){return;}
+  drag={x:e.clientX,y:e.clientY,l:scroller.scrollLeft,t:scroller.scrollTop};
+  moved=false;
+});
+window.addEventListener('pointermove',function(e){
+  if(!drag){return;}
+  var dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+  if(Math.abs(dx)+Math.abs(dy)>4){moved=true;}
+  if(moved){
+    scroller.classList.add('dragging');
+    scroller.scrollLeft=drag.l-dx;
+    scroller.scrollTop=drag.t-dy;
+  }
+});
+window.addEventListener('pointerup',function(){
+  drag=null;
+  scroller.classList.remove('dragging');
+  setTimeout(function(){moved=false;},0);
+});
+
+update();
+applyZoom();
+if(scroller.scrollWidth>scroller.clientWidth+2){
+  scroller.scrollLeft=(scroller.scrollWidth-scroller.clientWidth)*0.45;
+}
+})();
+</script>
+
+</body></html>
